@@ -1,0 +1,823 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kinship</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;900&family=Karla:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #de36a9;
+            --primary-dark: #ec5dcb;
+            --accent: #e596e6;
+            --bg-cream: #FFF8E7;
+            --bg-light: #FFFBF0;
+            --text-dark: #2C1810;
+            --text-medium: #5C4033;
+            --text-light: #8B7355;
+            --border: #E8D5B8;
+            --success: #db22c9;
+            --error: #E74C3C;
+            --shadow: rgba(212, 105, 28, 0.15);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Karla', sans-serif;
+            background: linear-gradient(135deg, var(--bg-cream) 0%, var(--bg-light) 100%);
+            color: var(--text-dark);
+            min-height: 100vh;
+            /* padding-bottom: 80px; */
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: 2rem 1.5rem;
+            text-align: center;
+            box-shadow: 0 4px 20px var(--shadow);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -10%;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            border-radius: 50%;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0); }
+            50% { transform: translate(-20px, 20px); }
+        }
+
+        .header h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5rem;
+            font-weight: 900;
+            margin-bottom: 0.5rem;
+            position: relative;
+            z-index: 1;
+            letter-spacing: -0.5px;
+            min-height: 3.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .typewriter {
+            display: inline-block;
+            border-right: 3px solid white;
+            padding-right: 5px;
+            animation: blink 0.7s step-end infinite;
+        }
+
+        @keyframes blink {
+            50% { border-color: transparent; }
+        }
+
+        .header p {
+            font-size: 1rem;
+            opacity: 0.95;
+            position: relative;
+            z-index: 1;
+            font-weight: 500;
+        }
+
+        /* Navigation */
+        .nav {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 1rem 1rem 0;
+            margin-bottom: 1.5rem;
+        }
+
+        .nav-btn {
+            flex: 1;
+            max-width: 150px;
+            padding: 0.75rem 1.25rem;
+            border: none;
+            background: white;
+            color: var(--text-dark);
+            font-family: 'Karla', sans-serif;
+            font-weight: 600;
+            font-size: 0.95rem;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .nav-btn.active {
+            background: var(--primary);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px var(--shadow);
+        }
+
+        .nav-btn:hover:not(.active) {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+        }
+
+        /* Container */
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+
+        .view {
+            display: none;
+        }
+
+        .view.active {
+            display: block;
+            animation: fadeIn 0.4s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Search Bar */
+        .search-bar {
+            position: relative;
+            margin-bottom: 1.5rem;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 1rem 1rem 1rem 3rem;
+            border: 2px solid var(--border);
+            border-radius: 16px;
+            font-size: 1rem;
+            font-family: 'Karla', sans-serif;
+            background: white;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 4px 16px var(--shadow);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-light);
+            font-size: 1.2rem;
+        }
+
+        /* Filters */
+        .filters {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            padding: 0.6rem 1.2rem;
+            border: 2px solid var(--border);
+            background: white;
+            color: var(--text-medium);
+            font-family: 'Karla', sans-serif;
+            font-weight: 500;
+            font-size: 0.9rem;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .filter-btn.active {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: var(--text-dark);
+            font-weight: 600;
+        }
+
+        .filter-btn:hover {
+            border-color: var(--accent);
+        }
+
+        /* Relationship Cards */
+        .relations-grid {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .relation-card {
+            background: white;
+            border-radius: 16px;
+            padding: 1.25rem;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 2px solid transparent;
+        }
+
+        .relation-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+            border-color: var(--accent);
+        }
+
+        .relation-english {
+            font-size: 0.9rem;
+            color: var(--text-light);
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        .relation-punjabi {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 0.25rem;
+        }
+
+        .relation-category {
+            display: inline-block;
+            padding: 0.35rem 0.8rem;
+            background: var(--bg-cream);
+            color: var(--text-medium);
+            font-size: 0.8rem;
+            border-radius: 12px;
+            font-weight: 500;
+            margin-top: 0.5rem;
+        }
+
+        /* Quiz Section */
+        .quiz-container {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem 1.5rem;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+        }
+
+        .quiz-progress {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 2rem;
+            font-weight: 600;
+            color: var(--text-medium);
+        }
+
+        .quiz-question {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 2rem;
+            line-height: 1.4;
+        }
+
+        .quiz-options {
+            display: grid;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .quiz-option {
+            padding: 1.25rem;
+            border: 2px solid var(--border);
+            background: white;
+            border-radius: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1.1rem;
+            font-weight: 500;
+            text-align: left;
+        }
+
+        .quiz-option:hover:not(.correct):not(.incorrect) {
+            border-color: var(--primary);
+            background: var(--bg-cream);
+        }
+
+        .quiz-option.correct {
+            background: var(--success);
+            border-color: var(--success);
+            color: white;
+        }
+
+        .quiz-option.incorrect {
+            background: var(--error);
+            border-color: var(--error);
+            color: white;
+        }
+
+        .quiz-result {
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .quiz-score {
+            font-family: 'Playfair Display', serif;
+            font-size: 3rem;
+            font-weight: 900;
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+
+        .quiz-message {
+            font-size: 1.2rem;
+            color: var(--text-medium);
+            margin-bottom: 2rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            border: none;
+            padding: 1rem 2.5rem;
+            border-radius: 16px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 16px var(--shadow);
+            font-family: 'Karla', sans-serif;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 24px var(--shadow);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: var(--text-light);
+        }
+
+        .empty-state-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        /* Loading Animation */
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            color: var(--text-light);
+        }
+
+        /* Footer */
+        footer {
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            padding: 1rem;
+            text-align: center;
+            box-shadow: 0 -2px 12px rgba(0,0,0,0.08);
+            border-top: 2px solid var(--border);
+            z-index: 10;
+            margin-top: 15px;
+        }
+
+        footer p {
+            margin: 0;
+            color: var(--text-medium);
+            font-weight: 500;
+            font-size: 0.95rem;
+        }
+
+        @media (max-width: 480px) {
+            .header h1 {
+                font-size: 2rem;
+                min-height: 2.5rem;
+            }
+            
+            .relation-punjabi {
+                font-size: 1.5rem;
+            }
+            
+            .quiz-question {
+                font-size: 1.3rem;
+            }
+
+            footer p {
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1><span class="typewriter" id="typewriter"></span>, Karlee ❤️</h1>
+        <p>Learn Punjabi Relationship Names</p>
+    </div>
+
+    <div class="nav">
+        <button class="nav-btn active" onclick="showView('learn')">Learn</button>
+        <button class="nav-btn" onclick="showView('quiz')">Quiz</button>
+    </div>
+
+    <div class="container">
+        <!-- Learn View -->
+        <div id="learn-view" class="view active">
+            <div class="search-bar">
+                <span class="search-icon">🔍</span>
+                <input 
+                    type="text" 
+                    class="search-input" 
+                    placeholder="Search relationships..."
+                    id="search-input"
+                    oninput="filterRelations()"
+                >
+            </div>
+
+            <div class="filters" id="filters"></div>
+
+            <div class="relations-grid" id="relations-grid"></div>
+        </div>
+
+        <!-- Quiz View -->
+        <div id="quiz-view" class="view">
+            <div class="quiz-container" id="quiz-container"></div>
+        </div>
+    </div>
+
+    <script>
+        // Typewriter effect
+        function getGreeting() {
+            const hour = new Date().getHours();
+            if (hour < 12) return 'Good Morning';
+            if (hour < 17) return 'Good Afternoon';
+            return 'Good Evening';
+        }
+
+        const typewriterTexts = [
+            'Sat Shri Akal',
+            'Radha Soami',
+            getGreeting()
+        ];
+        let textIndex = 0;
+        let charIndex = 0;
+        let isDeleting = false;
+        let typewriterElement = null;
+
+        function typeWriter() {
+            if (!typewriterElement) {
+                typewriterElement = document.getElementById('typewriter');
+            }
+
+            const currentText = typewriterTexts[textIndex];
+            
+            if (isDeleting) {
+                typewriterElement.textContent = currentText.substring(0, charIndex - 1);
+                charIndex--;
+            } else {
+                typewriterElement.textContent = currentText.substring(0, charIndex + 1);
+                charIndex++;
+            }
+
+            let typeSpeed = isDeleting ? 50 : 100;
+
+            if (!isDeleting && charIndex === currentText.length) {
+                // Pause at end of word
+                typeSpeed = 2000;
+                isDeleting = true;
+            } else if (isDeleting && charIndex === 0) {
+                isDeleting = false;
+                textIndex = (textIndex + 1) % typewriterTexts.length;
+                typeSpeed = 500;
+            }
+
+            setTimeout(typeWriter, typeSpeed);
+        }
+
+        // Comprehensive relationship data
+        const relationships = [
+            // Paternal (Father's side)
+            { english: "Father's father", punjabi: "ਦਾਦਾ (Dada)", category: "Paternal" },
+            { english: "Father's mother", punjabi: "ਦਾਦੀ (Dadi)", category: "Paternal" },
+            { english: "Father's eldaer brother", punjabi: "ਤਾਇਆ (Taya)", category: "Paternal" },
+            { english: "Father's younger brother", punjabi: "ਚਾਚਾ (Chacha)", category: "Paternal" },
+            { english: "Father's elder's brother's wife", punjabi: "ਤਾਈ (Tai)", category: "Paternal" },
+            { english: "Father's younger's brother's wife", punjabi: "ਚਾਚੀ (Chachi)", category: "Paternal" },
+            { english: "Father's sister", punjabi: "ਬੁਆ (Bua)", category: "Paternal" },
+            { english: "Father's sister's husband", punjabi: "ਫੁਫੇਰ (Phuphar)", category: "Paternal" },
+            
+            // Maternal (Mother's side)
+            { english: "Mother's father", punjabi: "ਨਾਨਾ (Nana)", category: "Maternal" },
+            { english: "Mother's mother", punjabi: "ਨਾਨੀ (Nani)", category: "Maternal" },
+            { english: "Mother's brother", punjabi: "ਮਾਮਾ (Mama)", category: "Maternal" },
+            { english: "Mother's brother's wife", punjabi: "ਮਾਮੀ (Mami)", category: "Maternal" },
+            { english: "Mother's sister", punjabi: "ਮਾਸੀ (Masi)", category: "Maternal" },
+            { english: "Mother's sister's husband", punjabi: "ਮਾਸੜ (Masar)", category: "Maternal" },
+            
+            // Siblings
+            { english: "Elder brother", punjabi: "ਵੀਰ (Veer)", category: "Siblings" },
+            { english: "Younger brother", punjabi: "ਭਰਾ (Bhra)", category: "Siblings" },
+            { english: "Elder sister", punjabi: "ਭੈਣ (Bhen)", category: "Siblings" },
+            { english: "Younger sister", punjabi: "ਭੈਣ (Bhen)", category: "Siblings" },
+            { english: "Brother's wife", punjabi: "ਭਾਬੀ (Bhabhi)", category: "Siblings" },
+            { english: "Sister's husband", punjabi: "ਜੀਜਾ (Jeeja)", category: "Siblings" },
+            
+            // Spouse's Family (Husband's side)
+            { english: "Husband's father", punjabi: "ਸਹੁਰਾ (Saura)", category: "Husband's Family" },
+            { english: "Husband's mother", punjabi: "ਸੱਸ (Sass)", category: "Husband's Family" },
+            { english: "Husband's elder brother", punjabi: "ਜੇਠ (Jeth)", category: "Husband's Family" },
+            { english: "Husband's elder brother's wife", punjabi: "ਜਠਾਣੀ (Jethani)", category: "Husband's Family" },
+            { english: "Husband's younger brother", punjabi: "ਦਿਓਰ (Dyor)", category: "Husband's Family" },
+            { english: "Husband's younger brother's wife", punjabi: "ਦਰਾਣੀ (Daraani)", category: "Husband's Family" },
+            { english: "Husband's sister", punjabi: "ਨਣਦ (Nanad)", category: "Husband's Family" },
+            { english: "Husband's sister's husband", punjabi: "ਨਣਦੋਈ/ਨਣਦੋਈਆ (Nandoi/Nandoiya)", category: "Husband's Family" },
+            { english: "Husband's siblings/cousins child - boy", punjabi: "ਭਤੀਜਾ (Bhatija)", category: "Husband's Family" },
+            { english: "Husband's siblings/cousins child - girl", punjabi: "ਭਤੀਜੀ (Bhatiji)", category: "Husband's Family" },
+            
+            // Spouse's Family (Wife's side)
+            { english: "Wife's father", punjabi: "ਸਹੁਰਾ (Saura)", category: "Wife's Family" },
+            { english: "Wife's mother", punjabi: "ਸੱਸ (Sass)", category: "Wife's Family" },
+            { english: "Wife's brother", punjabi: "ਸਾਲਾ (Sala)", category: "Wife's Family" },
+            { english: "Wife's brother's wife", punjabi: "ਸਾਲਿਹਾਰ (Salehar)", category: "Wife's Family" },
+            { english: "Wife's sister", punjabi: "ਸਾਲੀ (Sali)", category: "Wife's Family" },
+            { english: "Wife's sister's husband", punjabi: "ਸਾਂਢੂ (Saandu)", category: "Wife's Family" },
+            { english: "Wife's siblings/cousins child - boy", punjabi: "ਭਤੀਜਾ (Bhatija)", category: "Husband's Family" },
+            { english: "Wife's siblings/cousins child - girl", punjabi: "ਭਤੀਜੀ (Bhatiji)", category: "Husband's Family" },
+
+            // Children & Grandchildren
+            { english: "Son", punjabi: "ਪੁੱਤਰ (Puttar)", category: "Children" },
+            { english: "Daughter", punjabi: "ਧੀ (Dhee)", category: "Children" },
+            { english: "Son's wife", punjabi: "ਨੂੰਹ (Nooh)", category: "Children" },
+            { english: "Daughter's husband", punjabi: "ਜਵਾਈ (Jawayi)", category: "Children" },
+            { english: "Son's son", punjabi: "ਪੋਤਰਾ/ਪੋਤਾ (Potra/Pota)", category: "Children" },
+            { english: "Son's daughter", punjabi: "ਪੋਤਰੀ/ਪੋਤੀ (Potri/Poti)", category: "Children" },
+            { english: "Daughter's son", punjabi: "ਦੋਹਤਰਾ/ਦੋਹਤਾ (Dohtra/Dohta)", category: "Children" },
+            { english: "Daughter's daughter", punjabi: "ਦੋਹਤਰੀ/ਦੋਹਤੀ (Dohtri/Dohti)", category: "Children" },
+            
+            // Cousins
+            // { english: "Father's brother's son", punjabi: "ਚਚੇਰਾ ਭਰਾ (Chachera Bhra)", category: "Cousins" },
+            // { english: "Father's sister's son", punjabi: "ਫੁਫੇਰਾ ਭਰਾ (Phupera Bhra)", category: "Cousins" },
+            // { english: "Mother's brother's son", punjabi: "ਮਾਮੇਰਾ ਭਰਾ (Mamera Bhra)", category: "Cousins" },
+            // { english: "Mother's sister's son", punjabi: "ਮਾਸੜ ਭਰਾ (Masar Bhra)", category: "Cousins" },
+
+            // Others
+            { english: "Children's spouse's father", punjabi: "ਕੁੜਮ (Kudam)", category: "Other" },
+            { english: "Children's spouse's mother", punjabi: "ਕੁੜਮਣੀ (Kudmani)", category: "Other" },
+            
+            // Immediate Family
+            { english: "Father", punjabi: "ਪਿਤਾ/ਪਿਉ (Pita/Pio)", category: "Immediate" },
+            { english: "Mother", punjabi: "ਮਾਤਾ/ਮਾਂ (Mata/Maa)", category: "Immediate" },
+            { english: "Husband", punjabi: "ਪਤੀ (Pati)", category: "Immediate" },
+            { english: "Wife", punjabi: "ਪਤਨੀ (Patni)", category: "Immediate" }
+        ];
+
+        // State
+        let currentFilter = 'All';
+        let filteredRelations = [...relationships];
+        let quizState = {
+            currentQuestion: 0,
+            score: 0,
+            questions: [],
+            answered: false
+        };
+
+        // Initialize
+        function init() {
+            setupFilters();
+            renderRelations();
+        }
+
+        // Setup filter buttons
+        function setupFilters() {
+            const categories = ['All', ...new Set(relationships.map(r => r.category))];
+            const filtersContainer = document.getElementById('filters');
+            
+            categories.forEach(cat => {
+                const btn = document.createElement('button');
+                btn.className = `filter-btn ${cat === 'All' ? 'active' : ''}`;
+                btn.textContent = cat;
+                btn.onclick = () => setFilter(cat);
+                filtersContainer.appendChild(btn);
+            });
+        }
+
+        // Set filter
+        function setFilter(category) {
+            currentFilter = category;
+            
+            // Update button states
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.textContent === category);
+            });
+            
+            filterRelations();
+        }
+
+        // Filter and search relations
+        function filterRelations() {
+            const searchTerm = document.getElementById('search-input').value.toLowerCase();
+            
+            filteredRelations = relationships.filter(rel => {
+                const matchesFilter = currentFilter === 'All' || rel.category === currentFilter;
+                const matchesSearch = rel.english.toLowerCase().includes(searchTerm) || 
+                                    rel.punjabi.toLowerCase().includes(searchTerm);
+                return matchesFilter && matchesSearch;
+            });
+            
+            renderRelations();
+        }
+
+        // Render relations
+        function renderRelations() {
+            const grid = document.getElementById('relations-grid');
+            
+            if (filteredRelations.length === 0) {
+                grid.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">🔍</div>
+                        <p>No relationships found</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            grid.innerHTML = filteredRelations.map(rel => `
+                <div class="relation-card">
+                    <div class="relation-english">${rel.english}</div>
+                    <div class="relation-punjabi">${rel.punjabi}</div>
+                    <span class="relation-category">${rel.category}</span>
+                </div>
+            `).join('');
+        }
+
+        // View switching
+        function showView(view) {
+            // Update nav buttons
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.textContent.toLowerCase() === view);
+            });
+            
+            // Update views
+            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+            document.getElementById(`${view}-view`).classList.add('active');
+            
+            // Initialize quiz if switching to quiz view
+            if (view === 'quiz') {
+                startQuiz();
+            }
+        }
+
+        // Quiz functionality
+        function startQuiz() {
+            // Generate 10 random questions
+            const shuffled = [...relationships].sort(() => Math.random() - 0.5);
+            quizState = {
+                currentQuestion: 0,
+                score: 0,
+                questions: shuffled.slice(0, 10).map(rel => {
+                    // Randomly ask either English->Punjabi or Punjabi->English
+                    const askPunjabi = Math.random() > 0.5;
+                    
+                    // Get wrong answers from the same category
+                    const wrongAnswers = relationships
+                        .filter(r => r.punjabi !== rel.punjabi && r.category === rel.category)
+                        .sort(() => Math.random() - 0.5)
+                        .slice(0, 3)
+                        .map(r => askPunjabi ? r.punjabi : r.english);
+                    
+                    const correctAnswer = askPunjabi ? rel.punjabi : rel.english;
+                    const options = [correctAnswer, ...wrongAnswers].sort(() => Math.random() - 0.5);
+                    
+                    return {
+                        question: askPunjabi ? rel.english : rel.punjabi,
+                        options: options,
+                        correct: correctAnswer
+                    };
+                }),
+                answered: false
+            };
+            
+            renderQuizQuestion();
+        }
+
+        function renderQuizQuestion() {
+            const container = document.getElementById('quiz-container');
+            const q = quizState.questions[quizState.currentQuestion];
+            
+            const progressDiv = document.createElement('div');
+            progressDiv.className = 'quiz-progress';
+            progressDiv.innerHTML = `
+                <span>Question ${quizState.currentQuestion + 1}/10</span>
+                <span>Score: ${quizState.score}</span>
+            `;
+            
+            const questionDiv = document.createElement('div');
+            questionDiv.className = 'quiz-question';
+            questionDiv.textContent = q.question;
+            
+            const optionsDiv = document.createElement('div');
+            optionsDiv.className = 'quiz-options';
+            
+            q.options.forEach(opt => {
+                const optionDiv = document.createElement('div');
+                optionDiv.className = 'quiz-option';
+                optionDiv.textContent = opt;
+                optionDiv.onclick = () => selectAnswer(opt);
+                optionsDiv.appendChild(optionDiv);
+            });
+            
+            container.innerHTML = '';
+            container.appendChild(progressDiv);
+            container.appendChild(questionDiv);
+            container.appendChild(optionsDiv);
+        }
+
+        function selectAnswer(answer) {
+            if (quizState.answered) return;
+            
+            quizState.answered = true;
+            const q = quizState.questions[quizState.currentQuestion];
+            const isCorrect = answer === q.correct;
+            
+            if (isCorrect) quizState.score++;
+            
+            // Highlight correct and incorrect answers
+            document.querySelectorAll('.quiz-option').forEach(opt => {
+                if (opt.textContent === q.correct) {
+                    opt.classList.add('correct');
+                } else if (opt.textContent === answer && !isCorrect) {
+                    opt.classList.add('incorrect');
+                }
+                opt.style.pointerEvents = 'none';
+            });
+            
+            // Move to next question after delay
+            setTimeout(() => {
+                quizState.currentQuestion++;
+                quizState.answered = false;
+                
+                if (quizState.currentQuestion < quizState.questions.length) {
+                    renderQuizQuestion();
+                } else {
+                    showQuizResults();
+                }
+            }, 1500);
+        }
+
+        function showQuizResults() {
+            const container = document.getElementById('quiz-container');
+            const percentage = (quizState.score / quizState.questions.length) * 100;
+            
+            let message = '';
+            if (percentage >= 90) message = 'Outstanding! You know your rishte! 🌟';
+            else if (percentage >= 70) message = 'Great job! Keep learning! 👏';
+            else if (percentage >= 50) message = 'Good effort! Practice more! 💪';
+            else message = 'Keep practicing! You\'ll get there! 📚';
+            
+            container.innerHTML = `
+                <div class="quiz-result">
+                    <div class="quiz-score">${quizState.score}/10</div>
+                    <div class="quiz-message">${message}</div>
+                    <button class="btn-primary" onclick="startQuiz()">Try Again</button>
+                </div>
+            `;
+        }
+
+        // Initialize on load
+        window.addEventListener('DOMContentLoaded', () => {
+            init();
+            typeWriter();
+        });
+    </script>
+
+    <footer>
+        <p>Made with ❤️ by your lover</p>
+    </footer>
+</body>
+</html>
