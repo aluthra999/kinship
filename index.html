@@ -472,6 +472,13 @@
     </div>
 
     <script>
+        // Google Sheets Configuration
+        // IMPORTANT: Replace this with your Google Apps Script Web App URL
+        const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzBxuay6Ve04Fw5vpvMP-7KeMIkX7vrytsJtoPKK6l41c82TAqb4TWI9_72xiZNC4JHzQ/exec';
+        
+        // Quiz tracking
+        let quizStartTime = null;
+
         // Typewriter effect
         function getGreeting() {
             const hour = new Date().getHours();
@@ -604,7 +611,8 @@
             currentQuestion: 0,
             score: 0,
             questions: [],
-            answered: false
+            answered: false,
+            detailedAnswers: [] // Track all Q&A for Google Sheets
         };
 
         // Initialize
@@ -695,6 +703,9 @@
 
         // Quiz functionality
         function startQuiz() {
+            // Start timer
+            quizStartTime = Date.now();
+            
             // Generate 10 random questions
             const shuffled = [...relationships].sort(() => Math.random() - 0.5);
             quizState = {
@@ -720,7 +731,8 @@
                         correct: correctAnswer
                     };
                 }),
-                answered: false
+                answered: false,
+                detailedAnswers: []
             };
             
             renderQuizQuestion();
@@ -767,6 +779,15 @@
             
             if (isCorrect) quizState.score++;
             
+            // Track detailed answer for Google Sheets
+            quizState.detailedAnswers.push({
+                questionNumber: quizState.currentQuestion + 1,
+                question: q.question,
+                userAnswer: answer,
+                correctAnswer: q.correct,
+                isCorrect: isCorrect
+            });
+            
             // Highlight correct and incorrect answers
             document.querySelectorAll('.quiz-option').forEach(opt => {
                 if (opt.textContent === q.correct) {
@@ -807,6 +828,43 @@
                     <button class="btn-primary" onclick="startQuiz()">Try Again</button>
                 </div>
             `;
+            
+            // Send results to Google Sheets
+            sendResultsToGoogleSheets();
+        }
+
+        // Send quiz results to Google Sheets
+        async function sendResultsToGoogleSheets() {
+            // Skip if URL not configured
+            if (!GOOGLE_SCRIPT_URL || GOOGLE_SCRIPT_URL === 'YOUR_SCRIPT_URL_HERE') {
+                console.log('Google Sheets not configured. Skipping data submission.');
+                return;
+            }
+            
+            try {
+                const timeTaken = Math.round((Date.now() - quizStartTime) / 1000); // in seconds
+                
+                const data = {
+                    score: quizState.score,
+                    total: quizState.questions.length,
+                    details: quizState.detailedAnswers,
+                    timeTaken: timeTaken
+                };
+                
+                const response = await fetch(GOOGLE_SCRIPT_URL, {
+                    method: 'POST',
+                    mode: 'no-cors', // Required for Google Apps Script
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                });
+                
+                console.log('Quiz results sent to Google Sheets successfully!');
+            } catch (error) {
+                console.error('Error sending results to Google Sheets:', error);
+                // Silently fail - don't interrupt user experience
+            }
         }
 
         // Initialize on load
